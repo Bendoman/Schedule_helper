@@ -7,6 +7,10 @@ from pprint import pprint
 
 
 
+
+
+
+
 os.system('cls')
 book = epub.read_epub('ref.epub')
 
@@ -143,6 +147,7 @@ songCounter = 0
 
 
 
+
 print(ws1.max_row)
 for row in range(1, ws1.max_row + 1):
     print(row)
@@ -159,7 +164,7 @@ cIndex = 0
 
 current = 'treasures'
 rows = ws1.max_row
-talkCell = {}
+
 
 for row in range(1, 1000):
     if(ws1[f'C{row}'].value == '[Talk]'):
@@ -210,6 +215,30 @@ for row in range(1, 1000):
                 cIndex += 1
             current = 'treasures'
 
+
+from tkinter import *
+from tkinter import ttk
+import customtkinter  
+
+app = customtkinter.CTk()
+app.geometry("720x480")
+
+scroll = Scrollbar(app)
+scroll.pack(side = RIGHT, fill = Y)
+
+displayList = Listbox(app, yscrollcommand=scroll.set)
+
+for i in range(0, 250):
+    displayList.insert(END, f"Line number {i}")
+
+displayList.pack(side = TOP, fill = BOTH)
+scroll.config(command=displayList.yview)
+    
+
+app.mainloop()
+
+
+
 from datetime import timedelta
 finishTime = timedelta(0, (7*3600+6*60))
 
@@ -217,7 +246,7 @@ finishTime = timedelta(0, (7*3600+6*60))
 
 # talkCell[talkTime[talk]] = f'D{row}'
 
-pprint(talkCell)
+
 
 
 # range = ws1['A1' : f'A{rows}']
@@ -264,6 +293,7 @@ bottom = Side(border_style='thin', color='808080')
 border = Border(top = top, bottom = bottom, left = left, right = right)
 
 
+
 for row in range(1, 200):
     try:
         if('min' in ws1[f'A{row}'].value):
@@ -284,8 +314,18 @@ for row in range(1, 200):
             for cell in cellRange:
                 for x in cell:
                     x.border = border
+
+            print("Does ", ws1[f'C{row}'], " require a speaker?")
+            response = input()
+            if(response != ""):
+                ws1[f'B{row}'] = response
+
+
+
+
     except:
         continue
+
 
 
 first = re.sub("-.*\s", " ", book.get_metadata('DC', 'title')[0][0])
@@ -310,6 +350,7 @@ for row in range(2, rows):
 
 wb.save(filename = "new.xlsx")
 
-os.startfile('new.xlsx')
+# os.startfile('new.xlsx')
+
 
 
