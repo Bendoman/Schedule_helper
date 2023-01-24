@@ -12,6 +12,7 @@ book = epub.read_epub('ref.epub')
 
 
 fileText = []
+scriptures = []
 
 for item in book.get_items():
     if item.get_type() == ebooklib.ITEM_DOCUMENT:
@@ -25,6 +26,16 @@ for snippet in fileText:
     
     for section in soup.find_all('div', {'class' : 'section'}):
         file.write(section.get_text())
+
+    
+    for test in soup.find_all('strong'):
+        for section in test.find_all('a', href="#citation1"):
+            test = re.sub("\xa0", " ", section.get_text())
+            scriptures.append(test)
+
+
+ 
+pprint(scriptures)
 
 file.close()
 
@@ -121,8 +132,7 @@ ws1 = wb.active
 songCounter = 0
 
 
-from datetime import timedelta
-finishTime = timedelta(0, (7*3600+6*60))
+
 
 
 
@@ -159,8 +169,7 @@ for row in range(1, 1000):
                 rows += 1
                 ws1.insert_rows(row, 1)
                 ws1[f'C{row}'] = talk
-                ws1[f'A{row}'] = talkTime[talk]    
-                talkCell[talk] = f'D{row}'
+                ws1[f'A{row}'] = talkTime[talk]   
 
                 ws1[f'A{row}'].alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
                 ws1[f'C{row}'].alignment = openpyxl.styles.Alignment(wrap_text=True)
@@ -177,7 +186,6 @@ for row in range(1, 1000):
                 ws1.insert_rows(row, 1)
                 ws1[f'C{row}'] = talk
                 ws1[f'A{row}'] = talkTime[talk]
-                talkCell[talk] = f'D{row}'
 
                 ws1[f'A{row}'].alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
                 ws1[f'C{row}'].alignment = openpyxl.styles.Alignment(wrap_text=True)
@@ -194,7 +202,6 @@ for row in range(1, 1000):
                 ws1.insert_rows(row, 1)
                 ws1[f'C{row}'] = talk
                 ws1[f'A{row}'] = talkTime[talk]
-                talkCell[talk] = f'D{row}'
 
                 ws1[f'A{row}'].alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
                 ws1[f'C{row}'].alignment = openpyxl.styles.Alignment(wrap_text=True)
@@ -203,14 +210,26 @@ for row in range(1, 1000):
                 cIndex += 1
             current = 'treasures'
 
+from datetime import timedelta
+finishTime = timedelta(0, (7*3600+6*60))
 
-# stripNum = re.search('\d+', talkTime[talk])
-# timeAdd = timedelta(0, (0*3600+int(stripNum.group())*60))
-# finishTime += timeAdd
-# ws1[f'D{row}'] = finishTime
-# print(talkTime[talk], int(stripNum.group()), finishTime)  
+
+
+# talkCell[talkTime[talk]] = f'D{row}'
 
 pprint(talkCell)
+
+
+# range = ws1['A1' : f'A{rows}']
+# for cell in range:
+#     for x in cell:
+#         if("min" in x.value):
+
+
+
+
+
+
 # for talk in talks:
 #     try:
 #         print(talkCell[talk])
@@ -225,8 +244,8 @@ right = Side(border_style='thin', color='FFFFFF')
 bottom = Side(border_style='thin', color='FFFFFF')
 border = Border(top = top, bottom = bottom, left = left, right = right)
 
-range = ws1['A1' : f'D{rows}']
-for cell in range:
+cellRange = ws1['A1' : f'D{rows}']
+for cell in cellRange:
     for x in cell:
         x.border = border
     
@@ -236,20 +255,61 @@ for cell in range:
 # columns = ['A', 'B', 'C', 'D']
 
 # for i in columns:
-#     range = ws1[f'{i}3' : f'{i}{rows}']
-#     for cell in range:
+#     cellRange = ws1[f'{i}3' : f'{i}{rows}']
+#     for cell in cellRange:
 #         for x in cell:
 #             x.border = border
 
+bottom = Side(border_style='thin', color='808080')
+border = Border(top = top, bottom = bottom, left = left, right = right)
 
 
+for row in range(1, 200):
+    try:
+        if('min' in ws1[f'A{row}'].value):
+            stripNum = re.search('\d+', ws1[f'A{row}'].value)
+            timeAdd = timedelta(0, (0*3600+int(stripNum.group())*60))
+            finishTime += timeAdd
+            ws1[f'D{row}'] = finishTime
+            
+            number_format = '[hh]:mm'
+            ws1[f'D{row}'].number_format = number_format
+            ws1[f'D{row}'].alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
+
+            for key in talkTime:
+                if(talkTime[key] == ws1[f'A{row}'].value):
+                    finishTime = timedelta(0, (7*3600+6*60))
+
+            cellRange = ws1[f'A{row}' : f'D{row}']
+            for cell in cellRange:
+                for x in cell:
+                    x.border = border
+    except:
+        continue
 
 
+first = re.sub("-.*\s", " ", book.get_metadata('DC', 'title')[0][0])
+second = re.sub(",\s.*-", ", ", book.get_metadata('DC', 'title')[0][0])
 
 
+ws1['B1'] = first
+print(rows)
+
+scripturesIndex = 0
+
+for row in range(2, rows):
+    if(ws1[f'B{row}'].value == '[Heading]'):
+        print('here')
+        ws1[f'B{row}'] = second
+    
+    if(ws1[f'C{row}'].value == '[Scripture]'):
+        ws1[f'C{row}'] = scriptures[scripturesIndex]
+        scripturesIndex += 1
 
 
 
 wb.save(filename = "new.xlsx")
 
 os.startfile('new.xlsx')
+
+
