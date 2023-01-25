@@ -25,6 +25,10 @@ for item in book.get_items():
 
 file = open('sections.txt', 'w', encoding="utf-8")
 
+months = ['January', 'February', 'March', 'April', 'May', 'June', 'July' 'August', 'September', 'October', 'November', 'December']
+
+dates = []
+
 for snippet in fileText:
     soup = BeautifulSoup(snippet, 'html.parser')
     
@@ -38,8 +42,18 @@ for snippet in fileText:
             scriptures.append(test)
 
 
+    for p in soup.find_all('span', {'class' : 'pageNum'}):
+        for month in months: 
+            value = p.next_sibling.get_text()
+            if month in value and "Workbook" not in value:
+                test = re.sub("\xa0", " ", value)
+                test = re.sub("-", " - ", test)
+                dates.append(test)
+
+
  
 pprint(scriptures)
+pprint(dates)
 
 file.close()
 
@@ -148,7 +162,7 @@ from tkinter import ttk
 
 root = Tk()
 root.title('Hello world')
-root.geometry('1000x500')
+root.geometry('800x500')
 
 # Create a main frame
 main_frame = Frame(root)
@@ -184,31 +198,41 @@ def printInput(event, talk, labelRow):
     pprint(talkSpeakerDict)
 
 
+dateIndex = 0
 
 for i in range(0, len(talks)):
-    try:
-        test = re.search(".{95}", talks[i]).group()
-        test += "..."
-    except:
-        test = talks[i]
-
     def handler(event, test=i, labelRow=i):
             printInput(event, talks[test], labelRow)
 
-    Label(second_frame, text=test).grid(row=i, column=0, pady=10, padx=10)
+
+    if "Song" not in talks[i]:
+        try:
+            test = re.search(".{95}", talks[i]).group()
+            test += "..."
+        except:
+            test = talks[i]
+
+        if("Opening Comments" not in test):
+            Label(second_frame, text=test, anchor="e", width=75).grid(row=i, column=0, pady=10, padx=0)
+
+            entry = (Entry(second_frame))
+            entry.grid(row=i, column=1, pady=10, padx=10)
+            entry.bind('<KeyRelease>', handler)
+        else:
+            Label(second_frame, text=dates[dateIndex], anchor="e", width=75).grid(row=i, column=0, pady=10, padx=0)
+            dateIndex += 1
+
+
     # speaker = Label(second_frame, text="")
     # speaker.grid(row=i, column=3, pady=10, padx=10)
     # speakerLabels.append(speaker)
 
-    entry = (Entry(second_frame))
-    entry.grid(row=i, column=1, pady=10, padx=10)
-    entry.bind('<KeyRelease>', handler)
-
+dateIndex = 0
 
 
 def close():
     root.quit()
-Button(second_frame, text='Apply', command=close).grid(row=0, column=3)
+Button(second_frame, text='Apply', command=close).grid(row=1, column=3)
 root.mainloop()
 
 
@@ -265,6 +289,7 @@ for row in range(1, 1000):
                         print("speaker for ", talk)
                         ws1[f'B{row}'] = talkSpeakerDict[talk]
                         ws1[f'B{row}'].alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
+                        ws1[f'B{row}'].font = openpyxl.styles.Font(bold=True)
                 except: 
                     continue
 
@@ -283,7 +308,7 @@ for row in range(1, 1000):
 
                 ws1[f'A{row}'].alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
                 
-                if(len(ws1[f'C{row}'].value) > 100):
+                if(len(ws1[f'C{row}'].value) > 70):
                     ws1[f'C{row}'].alignment = openpyxl.styles.Alignment(wrap_text=True)
                 else:
                     ws1[f'C{row}'].alignment = openpyxl.styles.Alignment(wrap_text=False)
@@ -293,6 +318,7 @@ for row in range(1, 1000):
                         print("speaker for ", talk)
                         ws1[f'B{row}'] = talkSpeakerDict[talk]
                         ws1[f'B{row}'].alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
+                        ws1[f'B{row}'].font = openpyxl.styles.Font(bold=True)
                 except: 
                     continue
 
@@ -313,7 +339,7 @@ for row in range(1, 1000):
 
                 print("LENGTH OF VALUE ", len(ws1[f'C{row}'].value))
                               
-                if(len(ws1[f'C{row}'].value) > 100):
+                if(len(ws1[f'C{row}'].value) > 70):
                     ws1[f'C{row}'].alignment = openpyxl.styles.Alignment(wrap_text=True)
                 else:
                     ws1[f'C{row}'].alignment = openpyxl.styles.Alignment(wrap_text=False)
@@ -324,6 +350,7 @@ for row in range(1, 1000):
                         print("speaker for ", talk)
                         ws1[f'B{row}'] = talkSpeakerDict[talk]
                         ws1[f'B{row}'].alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
+                        ws1[f'B{row}'].font = openpyxl.styles.Font(bold=True)
                 except: 
                     continue
             
@@ -362,18 +389,33 @@ finishTime = timedelta(0, (7*3600+6*60))
 #     except:
 #         continue
 
+
+
 from openpyxl.styles import Border, Side
+
+import math 
+
 
 top = Side(border_style='thin', color='FFFFFF')
 left = Side(border_style='thin', color='FFFFFF')
 right = Side(border_style='thin', color='FFFFFF')
 bottom = Side(border_style='thin', color='FFFFFF')
+
+# right_s = Side(**d.border.right.__dict__)
+# top_s = Side(**d.border.top.__dict__)
+# bottom_s = Side(**d.border.bottom.__dict__)
+
+# # set style of left border
+# left_s = Side(border_style="thin", color="000000")
+
 border = Border(top = top, bottom = bottom, left = left, right = right)
 
 cellRange = ws1['A1' : f'D{rows}']
 for cell in cellRange:
     for x in cell:
         x.border = border
+
+
     
 # right = Side(border_style='thin', color='000000')
 # border = Border(top = top, bottom = bottom, left = left, right = right)
@@ -389,41 +431,51 @@ for cell in cellRange:
 bottom = Side(border_style='thin', color='808080')
 border = Border(top = top, bottom = bottom, left = left, right = right)
 
-
+dateIndex = 0
 
 for row in range(1, 200):
+    if(ws1[f'B{row}'].value == '[Date]'):
+        ws1[f'B{row}'] = dates[dateIndex]
+        dateIndex+=1
+    try:
+        if("Closing Prayer" in ws1[f'C{row}'].value): 
+            ws1.delete_rows(row - 1, 1)
+            rows -= 1
+            
+    except:
+        print("No prayer")
+
     try:
         if('min' in ws1[f'A{row}'].value):
             stripNum = re.search('\d+', ws1[f'A{row}'].value)
             timeAdd = timedelta(0, (0*3600+int(stripNum.group())*60))
-            finishTime += timeAdd
+            print(finishTime, 'BEFORE', timeAdd)
+            finishTime += timeAdd 
+            print(finishTime, 'after')
+            
             ws1[f'D{row}'] = finishTime
             
             number_format = '[hh]:mm'
             ws1[f'D{row}'].number_format = number_format
             ws1[f'D{row}'].alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
 
-            for key in talkTime:
-                if(talkTime[key] == ws1[f'A{row}'].value):
-                    finishTime = timedelta(0, (7*3600+6*60))
+            if("Concluding Comments" in ws1[f'C{row}'].value):
+                finishTime = timedelta(0, (7*3600+6*60))
+
+            # for key in talkTime:
+            #     if(talkTime[key] == ws1[f'A{row}'].value):
+            #         finishTime = timedelta(0, (7*3600+6*60))
+
+            
 
             cellRange = ws1[f'A{row}' : f'D{row}']
             for cell in cellRange:
                 for x in cell:
                     x.border = border
-
-           
-
-
-
             # print("Does ", ws1[f'C{row}'], " require a speaker?")
             # response = input()
             # if(response != ""):
             #     ws1[f'B{row}'] = response
-
-
-
-
     except:
         continue
 
@@ -440,7 +492,7 @@ scripturesIndex = 0
 
 for row in range(2, rows):
     if(ws1[f'B{row}'].value == '[Heading]'):
-        print('here')
+        print('here', f'B{row}:C{row}')
         ws1[f'B{row}'] = second
         ws1[f'B{row}'].alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
         ws1.merge_cells(f'B{row}:C{row}')
@@ -450,11 +502,54 @@ for row in range(2, rows):
         ws1[f'C{row}'] = scriptures[scripturesIndex]
         scripturesIndex += 1
 
+cellRange = ws1[f'D2' : f'D{math.floor((rows) / 2)}']
+
+for i in range(2):
+    for cell in cellRange:
+        for x in cell:
+            top = Side(**x.border.top.__dict__)
+            left = Side(**x.border.left.__dict__)
+            bottom = Side(**x.border.bottom.__dict__)
+            # top = Side(border_style='thin', color='FFFFFF')
+            # left = Side(border_style='thin', color='FFFFFF')
+            # bottom = Side(border_style='thin', color='FFFFFF')
+
+            right = Side(border_style='thin', color='808080')
+
+            border = Border(top = top, bottom = bottom, left = left, right = right)
+            x.border = border
+    
+
+    cellRange = ws1[f'D{math.floor((rows) / 2) + 4}' : f'D{rows}']
+
+cellRange = ws1[f'A{math.floor((rows) / 2)}' : f'D{math.floor((rows) / 2)}']
+
+
+
+for i in range(2):
+    for cell in cellRange:
+        for x in cell:
+            top = Side(**x.border.top.__dict__)
+            left = Side(**x.border.left.__dict__)
+            right = Side(**x.border.right.__dict__)
+            # top = Side(border_style='thin', color='FFFFFF')
+            # left = Side(border_style='thin', color='FFFFFF')
+            # bottom = Side(border_style='thin', color='FFFFFF')
+
+            bottom = Side(border_style='thin', color='808080')
+
+            border = Border(top = top, bottom = bottom, left = left, right = right)
+            x.border = border
+    
+
+    cellRange = ws1[f'A{rows}' : f'D{rows}']
+
+
+    
 
 
 wb.save(filename = "new.xlsx")
 
 os.startfile('new.xlsx')
-
 
 

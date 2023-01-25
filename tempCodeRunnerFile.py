@@ -1,4 +1,8 @@
-def close():
-#     root.quit()
+rows += 1
+ws1.insert_rows(166, 1)
 
-# Button(second_frame, text='Apply', command=close).grid(row=0, column=4)
+rows += 1
+ws1.insert_rows(166, 1)
+
+rows += 1
+ws1.insert_rows(166, 1)
