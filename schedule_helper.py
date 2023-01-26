@@ -60,7 +60,7 @@ for chunk in bookText:
     # Extracts text containing the scripture associated with each week's sheet
     for section in soup.find_all('strong'):
         for subSection in section.find_all('a', href="#citation1"):
-            result = re.search("\d+\s[A-Z]+\s\d+-\d+|\d+\s[A-Z]+\s\d+", subSection.get_text())
+            result = re.search("\d*\s*[A-Z]+\s\d+-\d+|\d*\s*[A-Z]+\s\d+", subSection.get_text())
             if result != None:
                 # Removes unreadable character so that the result can be stored as plain text
                 result = re.sub("\xa0", " ", result.group()) 
@@ -81,7 +81,6 @@ for chunk in bookText:
                         dates.append(result)
 file.close()
 
-pprint(dates)
 
 file = open('bin/sections.txt', 'r', encoding="utf-8")
 sectionText = file.read()
