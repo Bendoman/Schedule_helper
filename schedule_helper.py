@@ -72,12 +72,16 @@ for chunk in bookText:
             value = p.next_sibling.get_text()
 
             if month in value and "Workbook" not in value:
-                result = re.sub("\xa0", " ", value)
-                result = re.sub("-", " - ", result)
-                dates.append(result)
+                test = re.search(".*\s\d+[-–]+.*\d+", value)
+                
+                if(test != None):
+                    result = re.sub("\xa0", " ", test.group())
+                    result = re.sub("-|–", " - ", result)
+                    if(result not in dates):
+                        dates.append(result)
 file.close()
 
-pprint(scriptures)
+pprint(dates)
 
 file = open('bin/sections.txt', 'r', encoding="utf-8")
 sectionText = file.read()
@@ -317,6 +321,9 @@ border = Border(top = top, bottom = bottom, left = left, right = right)
 finishTime = timedelta(0, (7*3600+6*60))
 
 for row in range(1, 200):
+    if(dateIndex >= len(dates)):  
+        break
+
     if(ws1[f'B{row}'].value == '[Date]'):
         ws1[f'B{row}'] = dates[dateIndex]
         dateIndex+=1
