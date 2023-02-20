@@ -18,7 +18,7 @@ from ebooklib import epub
 # ===============
 
 # Installing required modules
-os.system('pip install -r bin/requirements.txt')
+os.system('pip install -r src/requirements.txt')
 
 # Finds all files with the .epub extension in the /epubs directory
 epubs = [e for e in os.listdir('epubs') if e.endswith('.epub')]
@@ -42,7 +42,7 @@ for item in book.get_items():
         bookText.append(item.get_content())
 
 # Opens a textfile with utf-8 encoding to deal with problematic special characters
-file = open('bin/sections.txt', 'w', encoding="utf-8")
+file = open('src/sections.txt', 'w', encoding="utf-8")
 
 dates = [] # Used to store the date ranges for each individual week
 scriptures = [] # Used to store the scriptures included at the top of each week
@@ -82,7 +82,7 @@ for chunk in bookText:
 file.close()
 
 
-file = open('bin/sections.txt', 'r', encoding="utf-8")
+file = open('src/sections.txt', 'r', encoding="utf-8")
 sectionText = file.read()
 file.close()
 
@@ -94,11 +94,11 @@ z = re.sub("Spiritual\sGems:\s\(10\smin.\)\n", "Spiritual Gems: (10 min.) ", y)
 
 # Opens the file again without utf-8 encoding, to ensure that it can be opened
 # and read in the future as plain text without issue
-file = open('bin/sections.txt', 'w+')
+file = open('src/sections.txt', 'w+')
 file.write(z)
 file.close()
 
-file = open('bin/sections.txt', 'r')
+file = open('src/sections.txt', 'r')
 text = file.read()
 
 # Finds every song referenced in the text and appends it to the songs list
@@ -228,7 +228,7 @@ root.mainloop()
 
 
 # ====SPREADSHEET-EDITING====
-wb = openpyxl.load_workbook('bin/template.xlsx')
+wb = openpyxl.load_workbook('src/template.xlsx')
 ws1 = wb.active
 rows = ws1.max_row
 
