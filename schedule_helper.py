@@ -400,7 +400,7 @@ for i in range(2):
     cellRange = ws1[f'D{secondCoord + 1}' : f'D{rows}']
 cellRange = ws1[f'A{secondCoord - 3}' : f'D{secondCoord - 3}']
 
-#testing
+
 
 for i in range(2):
     for cell in cellRange:
