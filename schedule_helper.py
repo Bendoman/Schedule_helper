@@ -1,9 +1,11 @@
 # ====IMPORTS====
-import os 
+import os
 import re
+import sys
 import time
+import platform
 import openpyxl 
-
+import subprocess 
 from tkinter import *
 from tkinter import ttk
 
@@ -17,8 +19,6 @@ import ebooklib
 from ebooklib import epub
 # ===============
 
-# Installing required modules
-os.system('pip install -r src/requirements.txt')
 
 # Finds all files with the .epub extension in the /epubs directory
 epubs = [e for e in os.listdir('epubs') if e.endswith('.epub')]
@@ -420,6 +420,11 @@ wb.save(filename = f"output/{book.title}.xlsx")
 
 
 os.chdir('./output')
-os.startfile(f'{book.title}.xlsx')
+
+if(platform.system() == "Windows"):
+    os.startfile(f'{book.title}.xlsx')
+else:
+    opener ="open" if sys.platform == "darwin" else "xdg-open"
+    subprocess.call([opener, f'{book.title}.xlsx'])
 
 
