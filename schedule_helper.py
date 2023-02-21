@@ -2,11 +2,13 @@
 import os
 import re
 import sys
+import eel
 import time
 import shutil
 import platform
 import openpyxl 
 import subprocess 
+
 from tkinter import *
 from tkinter import ttk
 
@@ -34,7 +36,7 @@ if(len(epubs) != 1): # Raises an error if more than one .epub file is present
 
 bookPath = epubs[0]
 book = epub.read_epub(f'epubs/{bookPath}')
-shutil.move(f'epubs/{bookPath}', f'epubs archive/{bookPath}')
+# shutil.move(f'epubs/{bookPath}', f'epubs archive/{bookPath}')
 
 
 # Fills the bookText list with the raw item content from the .epub
@@ -112,10 +114,16 @@ for song in result:
 talks = [] 
 talkTime = {} # Dictionary containing pairs of talks and their associated length in minutes 
 #Finds each talk and time indicator that needs to be extracted  
+id = 0
 result = re.findall(".*\(\d+\smin.\).*\n|Song \d+", text)
 for talk in result: 
     result = re.search("\(\d+\smin.\)", talk)
     removeRe = re.sub("\(\d+\smin.\)", "", talk)
+
+    if("Opening Comments" in removeRe or "Concluding Comments" in removeRe):
+        removeRe += str(id)
+        id += 1
+
     talks.append(removeRe)
 
     if result is not None:
@@ -161,46 +169,39 @@ christians.pop()
 
 
 # ====USER-INTERFACE====
-root = Tk()
-root.geometry('800x500')
-root.title('Speaker assignment')
+# root = Tk()
+# root.geometry('800x500')
+# root.title('Speaker assignment')
 
-# Create a main frame
-main_frame = Frame(root)
-main_frame.pack(fill=BOTH, expand=1)
+# # Create a main frame
+# main_frame = Frame(root)
+# main_frame.pack(fill=BOTH, expand=1)
 
-# Create a canvas, so that the entire window can be scrolled
-my_canvas = Canvas(main_frame)
-my_canvas.pack(side=LEFT, fill=BOTH, expand=1)
+# # Create a canvas, so that the entire window can be scrolled
+# my_canvas = Canvas(main_frame)
+# my_canvas.pack(side=LEFT, fill=BOTH, expand=1)
 
-# Add a scrollbar to the Canvas
-my_scrollbar = ttk.Scrollbar(main_frame, orient=VERTICAL, command=my_canvas.yview)
-my_scrollbar.pack(side=RIGHT, fill=Y)
+# # Add a scrollbar to the Canvas
+# my_scrollbar = ttk.Scrollbar(main_frame, orient=VERTICAL, command=my_canvas.yview)
+# my_scrollbar.pack(side=RIGHT, fill=Y)
 
-# configure the canvas
-my_canvas.configure(yscrollcommand=my_scrollbar.set)
-my_canvas.bind('<Configure>', lambda e: my_canvas.configure(scrollregion=my_canvas.bbox('all')))
+# # configure the canvas
+# my_canvas.configure(yscrollcommand=my_scrollbar.set)
+# my_canvas.bind('<Configure>', lambda e: my_canvas.configure(scrollregion=my_canvas.bbox('all')))
 
-# create another frame inside the canvas
-second_frame = Frame(my_canvas)
-my_canvas.create_window((0,0), window=second_frame, anchor="nw")
+# # create another frame inside the canvas
+# second_frame = Frame(my_canvas)
+# my_canvas.create_window((0,0), window=second_frame, anchor="nw")
 
 
-dateIndex = 0
+# dateIndex = 0
 talkSpeakerDict = {} # Dictionary that associates a speaker value with a talk key
 
-# Captures the value of the Entry widgets when this function is called
-def captureInput(event, talk):
-    value = event.widget.get()
-    talkSpeakerDict[talk] = value
+eel.init(f'{os.path.dirname(os.path.realpath(__file__))}/web')
 
+displayTalks = []
 
 for i in range(len(talks)):
-    # Intermediary handler for each Entry widget created so that unique values can be passed
-    def handler(event, talkIndex=i):
-            captureInput(event, talks[talkIndex])
-
-
     if "Song" not in talks[i]:
         # Truncates string if it contains 85 characters or greater
         try:
@@ -209,24 +210,66 @@ for i in range(len(talks)):
         except:
             result = talks[i]
 
-        # Creates a label and associated Entry field for the user to input 
-        # a speaker to be assigned to a specific talk
-        if("Opening Comments" not in result):
-            Label(second_frame, text=result, anchor="e", width=75).grid(row=i, column=0, pady=10, padx=0)
+        displayTalks.append(result)
 
-            entry = (Entry(second_frame))
-            entry.grid(row=i, column=1, pady=10, padx=10)
-            entry.bind('<KeyRelease>', handler)
-        else: # Creates a label holding the date range of the sheet in place of the sheet
-            Label(second_frame, text=dates[dateIndex], anchor="e", width=75).grid(row=i, column=0, pady=10, padx=0)
-            dateIndex += 1
+eel.displayTalks(displayTalks)
+
+open = True
+@eel.expose
+def end_program():
+    global open
+    open = False
+    print("test")
+
+eel.start("index.html", block=False)
+
+while open:
+    eel.sleep(2.0)
+    #do things
+
+
+
+
+
+
+# # Captures the value of the Entry widgets when this function is called
+# def captureInput(event, talk):
+#     value = event.widget.get()
+#     talkSpeakerDict[talk] = value
+
+
+# for i in range(len(talks)):
+#     # Intermediary handler for each Entry widget created so that unique values can be passed
+#     def handler(event, talkIndex=i):
+#             captureInput(event, talks[talkIndex])
+
+
+#     if "Song" not in talks[i]:
+#         # Truncates string if it contains 85 characters or greater
+#         try:
+#             result = re.search(".{85}", talks[i]).group()
+#             result += "..." 
+#         except:
+#             result = talks[i]
+
+#         # Creates a label and associated Entry field for the user to input 
+#         # a speaker to be assigned to a specific talk
+#         if("Opening Comments" not in result):
+#             Label(second_frame, text=result, anchor="e", width=75).grid(row=i, column=0, pady=10, padx=0)
+
+#             entry = (Entry(second_frame))
+#             entry.grid(row=i, column=1, pady=10, padx=10)
+#             entry.bind('<KeyRelease>', handler)
+#         else: # Creates a label holding the date range of the sheet in place of the sheet
+#             Label(second_frame, text=dates[dateIndex], anchor="e", width=75).grid(row=i, column=0, pady=10, padx=0)
+#             dateIndex += 1
 dateIndex = 0
 
-def close():
-    root.quit()
-Button(second_frame, text='Apply', command=close).grid(row=1, column=3)
+# def close():
+#     root.quit()
+# Button(second_frame, text='Apply', command=close).grid(row=1, column=3)
 
-root.mainloop()
+# root.mainloop()
 
 
 # ====SPREADSHEET-EDITING====
