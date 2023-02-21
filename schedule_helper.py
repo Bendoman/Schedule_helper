@@ -489,12 +489,12 @@ for i in range(2):
 wb.save(filename = f"output/{book.title}.xlsx")
 
 
-os.chdir('./output')
+# os.chdir('./output')
 
-if(platform.system() == "Windows"):
-    os.startfile(f'{book.title}.xlsx')
-else:
-    opener ="open" if sys.platform == "darwin" else "xdg-open"
-    subprocess.call([opener, f'{book.title}.xlsx'])
+# if(platform.system() == "Windows"):
+#     os.startfile(f'{book.title}.xlsx')
+# else:
+#     opener ="open" if sys.platform == "darwin" else "xdg-open"
+#     subprocess.call([opener, f'{book.title}.xlsx'])
 
 

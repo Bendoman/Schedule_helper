@@ -2,31 +2,47 @@
     <head>
         <script src="eel.js"></script>
         <title>Schedule helper</title>
-        <script>
-            
-            eel.expose(displayTalks)
-            function displayTalks(talks)
-            {
-                console.log(talks)
+        <style>
+            li {
+                text-align: right;
             }
-
-            function exit()
-            {
-                eel.end_program()
-                window.close()
-            }
-
-            window.onbeforeunload = close_event_function;
-            function close_event_function() {
-                eel.end_program()
-            return null;
-            }        
-
-        </script>
+        </style>
     </head>
     <body>
         <h1>Hello world</h1>
         <button onclick="exit()">Exit</button>
         <button onclick="callPython(number=100)">Click me!</button>
+        <div class="content">
+            <ul class="talk_list">
+
+            </ul>
+        </div>
     </body>
+
+    <script defer>
+        eel.expose(displayTalks)
+        function displayTalks(talks)
+        {
+            console.log(talks)
+            talks.forEach(element => {
+                console.log(typeof(element))
+                
+                document.querySelector(".talk_list").innerHTML += `<li>${element}</li>`
+            });
+
+        }
+
+        function exit()
+        {
+            eel.end_program()
+            window.close()
+        }
+
+        window.onbeforeunload = close_event_function;
+        function close_event_function() {
+            eel.end_program()
+        return null;
+        }        
+
+    </script>
 </html>
