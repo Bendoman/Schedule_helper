@@ -34,7 +34,7 @@ if(len(epubs) != 1): # Raises an error if more than one .epub file is present
 
 bookPath = epubs[0]
 book = epub.read_epub(f'epubs/{bookPath}')
-# shutil.move(f'epubs/{bookPath}', f'epubs archive/{bookPath}')
+shutil.move(f'epubs/{bookPath}', f'epubs archive/{bookPath}')
 
 
 # Fills the bookText list with the raw item content from the .epub
