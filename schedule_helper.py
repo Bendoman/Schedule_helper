@@ -3,6 +3,7 @@ import os
 import re
 import sys
 import time
+import shutil
 import platform
 import openpyxl 
 import subprocess 
@@ -33,6 +34,7 @@ if(len(epubs) != 1): # Raises an error if more than one .epub file is present
 
 bookPath = epubs[0]
 book = epub.read_epub(f'epubs/{bookPath}')
+# shutil.move(f'epubs/{bookPath}', f'epubs archive/{bookPath}')
 
 
 # Fills the bookText list with the raw item content from the .epub
@@ -253,7 +255,8 @@ def insertTalk(row):
 
     rows += 1
     ws1.insert_rows(row, 1)
-    ws1[f'C{row}'] = talk
+
+    ws1[f'C{row}'] = talk 
     ws1[f'A{row}'] = talkTime[talk]   
 
     ws1[f'A{row}'].alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
@@ -269,7 +272,9 @@ def insertTalk(row):
         ws1[f'B{row}'].font = openpyxl.styles.Font(bold=True)
 
 
-for row in range(1, 1000):
+row = 1
+while row < rows:
+# for row in range(1, 1000):
     if(ws1[f'C{row}'].value == '[Talk]'):
         if(current == 'treasures'):
             ws1[f'C{row}'] = ""
@@ -299,7 +304,7 @@ for row in range(1, 1000):
             if(cIndex < len(christians) - 1):
                 cIndex += 1
             current = 'treasures'
-
+    row += 1
 
 
 top = Side(border_style='thin', color='FFFFFF')
@@ -319,7 +324,9 @@ border = Border(top = top, bottom = bottom, left = left, right = right)
 
 finishTime = timedelta(0, (7*3600+6*60))
 
-for row in range(1, 200):
+
+row = 1
+while row < rows:
     if(dateIndex >= len(dates)):  
         break
 
@@ -341,9 +348,32 @@ for row in range(1, 200):
     value = ws1[f'A{row}'].value
     if(value != None and 'min' in value):
         stripNum = re.search('\d+', ws1[f'A{row}'].value)
+        stripNum = int(stripNum.group())
 
-        timeAdd = timedelta(0, (0*3600+int(stripNum.group())*60))
+
+        cellRange = ws1[f'A{row}' : f'D{row}']
+
+        if('th study' in ws1[f'C{row}'].value):
+            stripNum += 1
+            if('Bible Reading' not in ws1[f'C{row}'].value):
+                ws1.insert_rows(row + 1, 1)
+                rows += 1
+                
+                grayFill = openpyxl.styles.PatternFill(start_color='BFBFBF', end_color='BFBFBF', fill_type='solid')
+                ws1[f'B{row + 1}'].fill = grayFill
+                cellRange = ws1[f'A{row + 1}' : f'D{row + 1}']
+
+        
+        for cell in cellRange:
+            for x in cell:
+                x.border = border
+
+        timeAdd = timedelta(0, (0*3600+stripNum)*60)
+
         finishTime += timeAdd 
+        
+        if(ws1[f'C{row + 1}'].value != None and "Congregation Bible Study: " in ws1[f'C{row + 1}'].value):
+            finishTime = timedelta(0, (8*3600+7*60))
 
         ws1[f'D{row}'] = finishTime
         
@@ -354,10 +384,7 @@ for row in range(1, 200):
         if("Concluding Comments" in ws1[f'C{row}'].value):
             finishTime = timedelta(0, (7*3600+6*60))
 
-        cellRange = ws1[f'A{row}' : f'D{row}']
-        for cell in cellRange:
-            for x in cell:
-                x.border = border
+    row += 1
 
 
 
