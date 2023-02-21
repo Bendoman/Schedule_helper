@@ -221,7 +221,7 @@ def end_program():
     open = False
     print("test")
 
-eel.start("index.html", block=False)
+eel.start("index.html", size=(1024, 768), block=False)
 
 while open:
     eel.sleep(2.0)
