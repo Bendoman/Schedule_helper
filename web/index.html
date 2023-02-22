@@ -20,9 +20,12 @@
             } */
             
             .menu {
+                display: flex;
+                flex-direction: column;
                 position: fixed;
                 right: 15px;
                 top: 15px;
+                gap: 5px;
             }
 
             .autocomplete {
@@ -50,14 +53,46 @@
             cursor: pointer;
             background-color: #fff; 
             border-bottom: 1px solid #d4d4d4; 
+            transition: color 0.25s;
+            transition: background-color 0.25s;
+            text-align: left;
             }
 
+            .autocomplete-items div:hover {
+            color: white;
+            background-color: #4933da; 
+            }
+
+            li {
+                display: flex;
+                justify-content: center;
+                position: relative;
+                list-style-type: none;
+            }
+
+            .liContainer {
+                text-align: right;
+                width: 60%;
+
+
+            }
+
+            p {
+                display: inline;
+                text-align: left;
+                margin-right: 10px;
+            }
+
+            h1 {
+                text-align: center;
+            }
         </style>
     </head>
     <body>
         
         <div class="menu">
             <button onclick="exit()">Apply</button>
+            <button onclick="open_directory()">Open epubs folder</button>
             <button id="start-button">Open the eyedropper</button>
             <span id="result"></span>
         </div>
@@ -207,7 +242,8 @@
             
             let dateIndex = 0
             let inputIndex = 0
-            document.querySelector(".talk_list").innerHTML += `<h1 class="month">${dates[dateIndex]}<h1>`
+            document.querySelector(".talk_list").innerHTML += `
+            <h1 class="month">${dates[dateIndex]}<h1>`
             
             talks.forEach(element => {
                 
@@ -228,13 +264,15 @@
                     document.querySelector(".talk_list").innerHTML += 
                     `
                         <li>
-                            ${result}
+                            <div class="liContainer">
+                            <p>${result}</p>
                             <div class="autocomplete" sylte="width:300px;">
                                 <input type="text"id="${element}"placeholder="Speaker"> <br>
                             </div>
                             
                             <div class="autocomplete" sylte="width:300px;">
                                 <input type="text"id="${element}-householder"placeholder="Householder">
+                            </div>
                             </div>
                         </li>
                     
@@ -244,23 +282,28 @@
                 {
                     document.querySelector(".talk_list").innerHTML += 
                     `<li>
-                        ${result}
+                        <div class="liContainer">
+                        <p>${result}</p>
                             <div class="autocomplete">
                                 <input type="text"id="${element}"placeholder="Speaker">
                             </div>
                         </li>
+                        </div>
                     <br>`
                 }
 
                 if(element.includes("Concluding Comments") && dateIndex < dates.length - 1)
                 {
                     dateIndex++
-                    document.querySelector(".talk_list").innerHTML += `<h1 class="month">${dates[dateIndex]}<h1>` 
+                    document.querySelector(".talk_list").innerHTML += `
+                    <h1 class="month">${dates[dateIndex]}<h1>`
                 }
 
             }
 
             });
+
+            document.querySelector(".talk_list").innerHTML += '</div>'
 
             const inputs = document.getElementsByTagName("input")
             for(let i = 0; i < inputs.length; i++)
@@ -280,7 +323,9 @@
                     values.push([inputs[i].value, inputs[i].id])
                 }    
             }
-            eel.take_input(values)
+            const resultElement = document.getElementById('result')
+
+            eel.take_input(values, resultElement.style.backgroundColor)
         }
 
         function exit()
@@ -288,6 +333,12 @@
             takeInput()
             eel.end_program()
             window.close()
+        }
+
+        function open_directory()
+        {
+            console.log("test")
+            eel.open_directory();
         }
 
         window.onbeforeunload = close_event_function;

@@ -10,6 +10,7 @@ import platform
 import openpyxl 
 import subprocess 
 
+#
 
 from tkinter import *
 from tkinter import ttk
@@ -22,8 +23,9 @@ from openpyxl.styles import Border, Side
 
 import ebooklib
 from ebooklib import epub
-# ===============
 
+import webbrowser
+# ===============
 
 # Finds all files with the .epub extension in the /epubs directory
 epubs = [e for e in os.listdir('epubs') if e.endswith('.epub')]
@@ -198,6 +200,7 @@ christians.pop()
 
 # dateIndex = 0
 talkSpeakerDict = {} # Dictionary that associates a speaker value with a talk key
+headingColor = ''
 
 eel.init(f'{os.path.dirname(os.path.realpath(__file__))}/web')
 
@@ -234,11 +237,16 @@ def end_program():
     print("test")
 
 @eel.expose
-def take_input(values):
+def take_input(values, color=''):
     print(values)
     for value in values:
         talkSpeakerDict[value[1]] = value[0]
     print(talkSpeakerDict)
+    print(color)
+
+@eel.expose
+def open_directory():
+    subprocess.Popen(f'explorer "{os.path.abspath("./epubs")}"')
 
 
 eel.start("index.html", size=(1024, 768), block=False)
