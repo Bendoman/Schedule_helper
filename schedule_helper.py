@@ -2,12 +2,14 @@
 import os
 import re
 import sys
+import csv
 import eel
 import time
 import shutil
 import platform
 import openpyxl 
 import subprocess 
+
 
 from tkinter import *
 from tkinter import ttk
@@ -212,7 +214,17 @@ eel.init(f'{os.path.dirname(os.path.realpath(__file__))}/web')
 
 #         displayTalks.append(result)
 
-eel.displayTalks(talks, dates)
+
+names = []
+with open('src/names.csv') as csv_file:
+    csv_reader = csv.reader(csv_file, delimiter=',')
+    for row in csv_reader:
+        names.append(row[0])
+names = names[1:]
+print(names)
+
+eel.setup(talks, dates, names)
+
 
 open = True
 @eel.expose
@@ -461,7 +473,6 @@ for row in range(2, rows):
     if(ws1[f'C{row}'].value != None):
         if("Opening Comments" in ws1[f'C{row}'].value or "Concluding Comments" in ws1[f'C{row}'].value):
             stripNum = re.sub('\d+', " ", ws1[f'C{row}'].value)
-            print(stripNum)
             ws1[f'C{row}'] = stripNum
 
     if(ws1[f'B{row}'].value == '[Heading]'):
