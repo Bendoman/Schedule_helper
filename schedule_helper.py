@@ -256,7 +256,7 @@ def open_directory():
     subprocess.Popen(f'explorer "{os.path.abspath("./epubs")}"')
 
 
-eel.start("index.html", size=(1024, 768), block=False)
+eel.start("index.html", size=(1100, 800), block=False)
 
 while True:
     

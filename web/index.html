@@ -3,6 +3,14 @@
         <script src="eel.js"></script>
         <title>Schedule helper</title>
         <style>
+            * {
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+            body {
+                background: #ededed;
+            }
+
             /* li {
                 display: flex;
                 justify-content: center;
@@ -26,7 +34,28 @@
                 right: 15px;
                 top: 15px;
                 gap: 5px;
+
+                padding: 10px;
+                background-color: #091d26;
+                z-index: 1;
+                border-radius: 5%;
             }
+
+            button {
+                background-color: #124d54;
+                border: none;
+                color: white;
+                text-decoration: none;
+                transition: background-color 0.25s;
+                cursor: pointer;
+                padding: 5px 10px; 
+            }
+
+            button:hover {
+                background-color: #d84f2a;
+            }
+
+
 
             .autocomplete {
             position: relative;
@@ -60,7 +89,7 @@
 
             .autocomplete-items div:hover {
             color: white;
-            background-color: #4933da; 
+            background-color: #d84f2a; 
             }
 
             li {
@@ -85,8 +114,11 @@
 
             h1 {
                 text-align: center;
-                border-bottom: 8px solid transparent;
+                border-bottom: 8px solid #315179;
             }
+
+
+
         </style>
     </head>
     <body>
@@ -225,14 +257,16 @@
                 dateHeaders[i].style.borderBottom = `8px solid ${result.sRGBHex}`
             }
 
-            resultElement.textContent = result.sRGBHex;
+            resultElement.textContent = (result.sRGBHex).toUpperCase();
             resultElement.style.backgroundColor = result.sRGBHex;
         }).catch((e) => {
-            resultElement.textContent = e;
+            console.log(e)
         });
         });         
 
         let namesArray = []
+
+
 
         eel.expose(setup)
         function setup(talks, dates, names)
@@ -244,7 +278,7 @@
             let dateIndex = 0
             let inputIndex = 0
             document.querySelector(".talk_list").innerHTML += `
-            <h1 class="month">${dates[dateIndex]}<h1>`
+            <h1 class="month">${dates[dateIndex]}</h1>`
             
             talks.forEach(element => {
                 
@@ -297,7 +331,7 @@
                 {
                     dateIndex++
                     document.querySelector(".talk_list").innerHTML += `
-                    <h1 class="month">${dates[dateIndex]}<h1>`
+                    <h1 class="month">${dates[dateIndex]}</h1>`
                 }
 
             }
@@ -340,8 +374,8 @@
         function exit()
         {
             takeInput()
-            // eel.end_program()
-            // window.close()
+            eel.end_program()
+            window.close()
         }
 
         function open_directory()
