@@ -212,7 +212,7 @@ eel.init(f'{os.path.dirname(os.path.realpath(__file__))}/web')
 
 #         displayTalks.append(result)
 
-eel.displayTalks(talks)
+eel.displayTalks(talks, dates)
 
 open = True
 @eel.expose
@@ -221,14 +221,26 @@ def end_program():
     open = False
     print("test")
 
+@eel.expose
+def take_input(values):
+    print(values)
+    for value in values:
+        talkSpeakerDict[value[1]] = value[0]
+    print(talkSpeakerDict)
+
+
 eel.start("index.html", size=(1024, 768), block=False)
 
-while open:
-    eel.sleep(2.0)
+while True:
+    
+    eel.sleep(1.0)
+
+    if(open == False):
+        break
     #do things
 
 
-
+print("out of loops")
 
 
 
@@ -304,7 +316,7 @@ def insertTalk(row):
 
     ws1[f'A{row}'].alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
     
-    if(len(ws1[f'C{row}'].value) > 70):
+    if(len(ws1[f'C{row}'].value) > 65):
         ws1[f'C{row}'].alignment = openpyxl.styles.Alignment(wrap_text=True)
     else:
         ws1[f'C{row}'].alignment = openpyxl.styles.Alignment(wrap_text=False)
@@ -402,6 +414,11 @@ while row < rows:
                 ws1.insert_rows(row + 1, 1)
                 rows += 1
                 
+                if(ws1[f'C{row}'].value + '-householder' in talkSpeakerDict):
+                    ws1[f'B{row + 1}'] = talkSpeakerDict[ws1[f'C{row}'].value + '-householder']
+                    ws1[f'B{row + 1}'].alignment = openpyxl.styles.Alignment(horizontal='center', vertical='center')
+                    ws1[f'B{row + 1}'].font = openpyxl.styles.Font(bold=True)
+                
                 grayFill = openpyxl.styles.PatternFill(start_color='BFBFBF', end_color='BFBFBF', fill_type='solid')
                 ws1[f'B{row + 1}'].fill = grayFill
                 cellRange = ws1[f'A{row + 1}' : f'D{row + 1}']
@@ -441,6 +458,12 @@ secondCoord = None
 scripturesIndex = 0
 
 for row in range(2, rows):
+    if(ws1[f'C{row}'].value != None):
+        if("Opening Comments" in ws1[f'C{row}'].value or "Concluding Comments" in ws1[f'C{row}'].value):
+            stripNum = re.sub('\d+', " ", ws1[f'C{row}'].value)
+            print(stripNum)
+            ws1[f'C{row}'] = stripNum
+
     if(ws1[f'B{row}'].value == '[Heading]'):
         secondCoord = row
         ws1[f'B{row}'] = second
