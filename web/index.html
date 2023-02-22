@@ -3,9 +3,22 @@
         <script src="eel.js"></script>
         <title>Schedule helper</title>
         <style>
-            li {
-                text-align: right;
+            /* li {
+                display: flex;
+                justify-content: center;
+                gap: 20px;
+                border: 1px solid red;
             }
+
+            input {
+                height: 35px;
+            }
+
+            p {
+                border: 2px solid green;
+                text-align: right;
+            } */
+
         </style>
     </head>
     <body>
@@ -14,7 +27,6 @@
         <button onclick="callPython(number=100)">Click me!</button>
         <div class="content">
             <ul class="talk_list">
-
             </ul>
         </div>
     </body>
@@ -25,11 +37,28 @@
         {
             console.log(talks)
             talks.forEach(element => {
-                console.log(typeof(element))
-                
-                document.querySelector(".talk_list").innerHTML += `<li>${element}</li>`
-            });
 
+            if(!element.includes("Song"))
+            {
+                if(element.length > 50)
+                {
+                    let execute = /.{49}/.exec(element)
+                    result = execute[0]
+                    result += "..."
+                    console.log('test')
+                }
+                else 
+                    result = element
+                
+                if(element.includes("th study") && !element.includes("Bible Reading"))
+                {
+                    document.querySelector(".talk_list").innerHTML += `<li>${result}<input type="text"id="${element}"><input type="text"id="${element}-householder"></li>`
+                }
+                else
+                    document.querySelector(".talk_list").innerHTML += `<li>${result}<input type="text"id="${element}"></li>`
+            }
+
+            });
         }
 
         function exit()

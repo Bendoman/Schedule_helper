@@ -199,20 +199,20 @@ talkSpeakerDict = {} # Dictionary that associates a speaker value with a talk ke
 
 eel.init(f'{os.path.dirname(os.path.realpath(__file__))}/web')
 
-displayTalks = []
+# displayTalks = []
 
-for i in range(len(talks)):
-    if "Song" not in talks[i]:
-        # Truncates string if it contains 85 characters or greater
-        try:
-            result = re.search(".{85}", talks[i]).group()
-            result += "..." 
-        except:
-            result = talks[i]
+# for i in range(len(talks)):
+#     if "Song" not in talks[i]:
+#         # Truncates string if it contains 85 characters or greater
+#         try:
+#             result = re.search(".{85}", talks[i]).group()
+#             result += "..." 
+#         except:
+#             result = talks[i]
 
-        displayTalks.append(result)
+#         displayTalks.append(result)
 
-eel.displayTalks(displayTalks)
+eel.displayTalks(talks)
 
 open = True
 @eel.expose
