@@ -85,6 +85,7 @@
 
             h1 {
                 text-align: center;
+                border-bottom: 8px solid transparent;
             }
         </style>
     </head>
@@ -315,6 +316,7 @@
         function takeInput()
         {
             let values = []
+            let color = '#315179'
             const inputs = document.getElementsByTagName("input")
             for(let i = 0; i < inputs.length; i++)
             {   
@@ -323,16 +325,23 @@
                     values.push([inputs[i].value, inputs[i].id])
                 }    
             }
+
             const resultElement = document.getElementById('result')
 
-            eel.take_input(values, resultElement.style.backgroundColor)
+            const rgb2hex = (rgb) => `#${rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/).slice(1).map(n => parseInt(n, 10).toString(16).padStart(2, '0')).join('')}`
+            
+
+            if(resultElement.style.backgroundColor != '')
+                color = rgb2hex(resultElement.style.backgroundColor)
+
+            eel.take_input(values, color)
         }
 
         function exit()
         {
             takeInput()
-            eel.end_program()
-            window.close()
+            // eel.end_program()
+            // window.close()
         }
 
         function open_directory()

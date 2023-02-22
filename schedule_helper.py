@@ -238,11 +238,18 @@ def end_program():
 
 @eel.expose
 def take_input(values, color=''):
+    global headingColor
     print(values)
     for value in values:
         talkSpeakerDict[value[1]] = value[0]
-    print(talkSpeakerDict)
-    print(color)
+    headingColor = color[1:]
+
+    print(headingColor.upper())
+    # headingColor = headingColor[1:].upper()
+    # headingColor = re.sub('\D', '', headingColor)
+    
+
+    # print(rgb_to_hex_conversion(headingColor[0:1], headingColor[2:3], headingColor[4:5]))
 
 @eel.expose
 def open_directory():
@@ -261,7 +268,7 @@ while True:
 
 
 print("out of loops")
-
+print(headingColor)
 
 
 # # Captures the value of the Entry widgets when this function is called
@@ -421,6 +428,14 @@ while row < rows:
 
 
     value = ws1[f'A{row}'].value
+
+    if(ws1[f'C{row + 1}'].value != None and 'Opening Prayer' in ws1[f'C{row + 1}'].value):
+        headerFill = openpyxl.styles.PatternFill(patternType='solid', fill_type='solid', fgColor=openpyxl.styles.Color(headingColor))
+        ws1[f'A{row}'].fill = headerFill
+        ws1[f'B{row}'].fill = headerFill
+        ws1[f'C{row}'].fill = headerFill
+        ws1[f'D{row}'].fill = headerFill
+    
     if(value != None and 'min' in value):
         stripNum = re.search('\d+', ws1[f'A{row}'].value)
         stripNum = int(stripNum.group())
