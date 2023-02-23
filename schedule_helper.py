@@ -187,12 +187,6 @@ writer = csv.writer(csv_file, delimiter='\n')
 
 eel.setup(talks, dates, names)
 
-open = True
-@eel.expose
-def end_program():
-    global open
-    open = False
-
 @eel.expose
 def take_input(values, color=''):
     global headingColor
@@ -213,6 +207,15 @@ namesToRemove = []
 def remove_speaker(value):
     namesToRemove.append(value)
 
+@eel.expose
+def quit():
+    sys.exit()
+
+open = True
+@eel.expose
+def end_program():
+    global open
+    open = False
 
 eel.start("index.html", size=(1100, 800), block=False)
 while True:    
@@ -465,5 +468,3 @@ if(platform.system() == "Windows"):
 else:
     opener ="open" if sys.platform == "darwin" else "xdg-open"
     subprocess.call([opener, f'{book.title}.xlsx'])
-
-

@@ -11,83 +11,18 @@
                 background: #ededed;
             }
             
-            .menu {
-                display: flex;
-                flex-direction: column;
-                position: fixed;
-                right: 15px;
-                top: 15px;
-                gap: 5px;
-
-                padding: 10px;
-                background-color: #091d26;
-                z-index: 1;
-                border-radius: 5%;
-            }
-
             button {
-                background-color: #124d54;
                 border: none;
                 color: white;
-                text-decoration: none;
-                transition: background-color 0.25s;
                 cursor: pointer;
                 padding: 5px 10px; 
+                text-decoration: none;
+                background-color: #124d54;
+                transition: background-color 0.25s;
             }
 
             button:hover {
                 background-color: #d84f2a;
-            }
-
-
-
-            .autocomplete {
-            position: relative;
-            display: inline-block;
-            }
-
-            .autocomplete-items {
-            position: absolute;
-            border: 1px solid #d4d4d4;
-            border-bottom: none;
-            border-top: none;
-            z-index: 99;
-            /*position the autocomplete items to be the same width as the container:*/
-            top: 100%;
-            left: 0;
-            right: 0;
-
-            /* width: 200px; */
-
-            }
-
-            .autocomplete-items div {
-            padding: 10px;
-            cursor: pointer;
-            background-color: #fff; 
-            border-bottom: 1px solid #d4d4d4; 
-            transition: color 0.25s;
-            transition: background-color 0.25s;
-            text-align: left;
-            }
-
-            .autocomplete-items div:hover {
-            color: white;
-            background-color: #d84f2a; 
-            }
-
-            li {
-                display: flex;
-                justify-content: center;
-                position: relative;
-                list-style-type: none;
-            }
-
-            .liContainer {
-                text-align: right;
-                width: 60%;
-
-
             }
 
             p {
@@ -100,18 +35,77 @@
                 text-align: center;
                 border-bottom: 8px solid #315179;
             }
+            
+            li {
+                display: flex;
+                position: relative;
+                list-style-type: none;
+                justify-content: center;
+            }
 
+            .liContainer {
+                width: 60%;
+                text-align: right;
+            }
 
+            .menu {
+                gap: 5px;
+                top: 15px;
+                right: 15px;
+                display: flex;
+                position: fixed;
+                flex-direction: column;
+                
+                z-index: 1;
+                padding: 10px;
+                border-radius: 5%;
+                background-color: #091d26;
+            }
 
+            .autocomplete {
+                position: relative;
+                display: inline-block;
+            }
+
+            .autocomplete-items {
+                z-index: 99;
+                border-top: none;
+                position: absolute;
+                border-bottom: none;
+                border: 1px solid #d4d4d4;
+
+                left: 0;
+                right: 0;
+                top: 100%;
+            }
+
+            .autocomplete-items div {
+                padding: 10px;
+                cursor: pointer;
+                text-align: left;
+                background-color: #fff; 
+                transition: color 0.25s;
+                border-bottom: 1px solid #d4d4d4; 
+                transition: background-color 0.25s;
+            }
+
+            .autocomplete-items div:hover {
+                color: white;
+                background-color: #d84f2a; 
+            }
         </style>
     </head>
+
     <body>
         
         <div class="menu">
+
             <button onclick="exit()">Apply</button>
+            <button onclick="quit()">Cancel</button>
             <button onclick="open_directory()">Open epubs folder</button>
             <button id="start-button">Open the eyedropper</button>
             <span id="result"></span>
+
             <input id="speaker_add" type="text" style="width:150px">
             <button id="add_name" placedholder="Add name" onclick="add_speaker()">Add speaker</button>
 
@@ -119,55 +113,61 @@
             <button id="remove_name" placedholder="Remove name" onclick="remove_speaker()">Remove speaker</button>
 
         </div>
+
         <div class="content">
             <ul class="talk_list">
             </ul>
         </div>
+
     </body>
 
     <script defer>
-        function autocomplete(inp, arr) {
-        /*the autocomplete function takes two arguments,
-        the text field element and an array of possible autocompleted values:*/
-        var currentFocus;
-        /*execute a function when someone writes in the text field:*/
-        inp.addEventListener("input", function(e) {
-            var a, b, i, val = this.value;
-            /*close any already open lists of autocompleted values*/
-            closeAllLists();
-            if (!val) { return false;}
-            currentFocus = -1;
-            /*create a DIV element that will contain the items (values):*/
-            a = document.createElement("DIV");
-            a.setAttribute("id", this.id + "autocomplete-list");
-            a.setAttribute("class", "autocomplete-items");
-            /*append the DIV element as a child of the autocomplete container:*/
-            this.parentNode.appendChild(a);
-            /*for each item in the array...*/
-            for (i = 0; i < arr.length; i++) {
-                /*check if the item starts with the same letters as the text field value:*/
-                if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-                /*create a DIV element for each matching element:*/
-                b = document.createElement("DIV");
-                /*make the matching letters bold:*/
-                b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-                b.innerHTML += arr[i].substr(val.length);
-                /*insert a input field that will hold the current array item's value:*/
-                b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-                /*execute a function when someone clicks on the item value (DIV element):*/
-                b.addEventListener("click", function(e) {
-                    /*insert the value for the autocomplete text field:*/
-                    inp.value = this.getElementsByTagName("input")[0].value;
-                    /*close the list of autocompleted values,
-                    (or any other open lists of autocompleted values:*/
-                    closeAllLists();
-                });
-                a.appendChild(b);
+        function autocomplete(inp, arr) 
+        {
+            /*the autocomplete function takes two arguments,
+            the text field element and an array of possible autocompleted values:*/
+            var currentFocus;
+            /*execute a function when someone writes in the text field:*/
+            inp.addEventListener("input", function(e) {
+                var a, b, i, val = this.value;
+                /*close any already open lists of autocompleted values*/
+                closeAllLists();
+                if (!val) { return false;}
+                currentFocus = -1;
+                /*create a DIV element that will contain the items (values):*/
+                a = document.createElement("DIV");
+                a.setAttribute("id", this.id + "autocomplete-list");
+                a.setAttribute("class", "autocomplete-items");
+                /*append the DIV element as a child of the autocomplete container:*/
+                this.parentNode.appendChild(a);
+                /*for each item in the array...*/
+                for (i = 0; i < arr.length; i++) 
+                {
+                    /*check if the item starts with the same letters as the text field value:*/
+                    if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) 
+                    {
+                        /*create a DIV element for each matching element:*/
+                        b = document.createElement("DIV");
+                        /*make the matching letters bold:*/
+                        b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                        b.innerHTML += arr[i].substr(val.length);
+                        /*insert a input field that will hold the current array item's value:*/
+                        b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                        /*execute a function when someone clicks on the item value (DIV element):*/
+                        b.addEventListener("click", function(e) {
+                            /*insert the value for the autocomplete text field:*/
+                            inp.value = this.getElementsByTagName("input")[0].value;
+                            /*close the list of autocompleted values,
+                            (or any other open lists of autocompleted values:*/
+                            closeAllLists();
+                        });
+                        a.appendChild(b);
+                    }
                 }
-            }
-        });
+            });
 
-        function addActive(x) {
+        function addActive(x) 
+        {
             /*a function to classify an item as "active":*/
             if (!x) return false;
             /*start by removing the "active" class on all items:*/
@@ -177,62 +177,67 @@
             /*add class "autocomplete-active":*/
             x[currentFocus].classList.add("autocomplete-active");
         }
-        function removeActive(x) {
+
+        function removeActive(x) 
+        {
             /*a function to remove the "active" class from all autocomplete items:*/
             for (var i = 0; i < x.length; i++) {
             x[i].classList.remove("autocomplete-active");
             }
         }
-        function closeAllLists(elmnt) {
+
+        function closeAllLists(elmnt) 
+        {
             /*close all autocomplete lists in the document,
             except the one passed as an argument:*/
             var x = document.getElementsByClassName("autocomplete-items");
-            for (var i = 0; i < x.length; i++) {
-            if (elmnt != x[i] && elmnt != inp) {
-                x[i].parentNode.removeChild(x[i]);
-            }
+            for (var i = 0; i < x.length; i++) 
+            {
+                if (elmnt != x[i] && elmnt != inp) 
+                {
+                    x[i].parentNode.removeChild(x[i]);
+                }
             }
         }
+
         /*execute a function when someone clicks in the document:*/
         document.addEventListener("click", function (e) {
             closeAllLists(e.target);
         });
+
         }
 
-/*An array containing all the country names in the world:*/
 
+        document.getElementById('start-button').addEventListener('click', () => 
+        {
+            const resultElement = document.getElementById('result');
 
-/*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
-
-
-        document.getElementById('start-button').addEventListener('click', () => {
-        const resultElement = document.getElementById('result');
-
-        if (!window.EyeDropper) {
-            resultElement.textContent = 'Your browser does not support the EyeDropper API';
-            return;
-        }
-
-        const eyeDropper = new EyeDropper();
-
-        eyeDropper.open().then((result) => {
-            const dateHeaders = document.getElementsByClassName("month")
-            console.log(dateHeaders)
-            for(let i = 0; i < dateHeaders.length; i++)
+            if (!window.EyeDropper) 
             {
-                dateHeaders[i].style.borderBottom = `8px solid ${result.sRGBHex}`
+                resultElement.textContent = 'Your browser does not support the EyeDropper API';
+                return;
             }
 
-            resultElement.textContent = (result.sRGBHex).toUpperCase();
-            resultElement.style.backgroundColor = result.sRGBHex;
-        }).catch((e) => {
-            console.log(e)
-        });
+            const eyeDropper = new EyeDropper();
+
+            eyeDropper.open().then((result) => 
+            {
+                const dateHeaders = document.getElementsByClassName("month")
+                console.log(dateHeaders)
+                for(let i = 0; i < dateHeaders.length; i++)
+                {
+                    dateHeaders[i].style.borderBottom = `8px solid ${result.sRGBHex}`
+                }
+
+                resultElement.textContent = (result.sRGBHex).toUpperCase();
+                resultElement.style.backgroundColor = result.sRGBHex;
+            }).catch((e) => 
+            {
+                console.log(e)
+            });
         });         
 
         let namesArray = []
-
-
 
         eel.expose(setup)
         function setup(talks, dates, names)
@@ -246,62 +251,60 @@
             document.querySelector(".talk_list").innerHTML += `
             <h1 class="month">${dates[dateIndex]}</h1>`
             
-            talks.forEach(element => {
-                
-            if(!element.includes("Song"))
+            talks.forEach(element => 
             {
-                if(element.length > 50)
+                if(!element.includes("Song"))
                 {
-                    let execute = /.{49}/.exec(element)
-                    result = execute[0]
-                    result += "..."
-                    console.log('test')
-                }
-                else 
-                    result = element
-                
-                if(element.includes("th study") && !element.includes("Bible Reading"))
-                {
-                    document.querySelector(".talk_list").innerHTML += 
-                    `
-                        <li>
+                    if(element.length > 50)
+                    {
+                        let execute = /.{49}/.exec(element)
+                        result = execute[0]
+                        result += "..."
+                        console.log('test')
+                    }
+                    else 
+                        result = element
+                    
+                    if(element.includes("th study") && !element.includes("Bible Reading"))
+                    {
+                        document.querySelector(".talk_list").innerHTML += 
+                        `
+                            <li>
+                                <div class="liContainer">
+                                <p>${result}</p>
+                                <div class="autocomplete" sylte="width:300px;">
+                                    <input type="text"id="${element}"placeholder="Speaker"> <br>
+                                </div>
+                                
+                                <div class="autocomplete" sylte="width:300px;">
+                                    <input type="text"id="${element}-householder"placeholder="Householder">
+                                </div>
+                                </div>
+                            </li>
+                        
+                        <br>`
+                    }
+                    else
+                    {
+                        document.querySelector(".talk_list").innerHTML += 
+                        `<li>
                             <div class="liContainer">
                             <p>${result}</p>
-                            <div class="autocomplete" sylte="width:300px;">
-                                <input type="text"id="${element}"placeholder="Speaker"> <br>
+                                <div class="autocomplete">
+                                    <input type="text"id="${element}"placeholder="Speaker">
+                                </div>
+                            </li>
                             </div>
-                            
-                            <div class="autocomplete" sylte="width:300px;">
-                                <input type="text"id="${element}-householder"placeholder="Householder">
-                            </div>
-                            </div>
-                        </li>
-                    
-                    <br>`
-                }
-                else
-                {
-                    document.querySelector(".talk_list").innerHTML += 
-                    `<li>
-                        <div class="liContainer">
-                        <p>${result}</p>
-                            <div class="autocomplete">
-                                <input type="text"id="${element}"placeholder="Speaker">
-                            </div>
-                        </li>
-                        </div>
-                    <br>`
-                }
+                        <br>`
+                    }
 
-                if(element.includes("Concluding Comments") && dateIndex < dates.length - 1)
-                {
-                    dateIndex++
-                    document.querySelector(".talk_list").innerHTML += `
-                    <h1 class="month">${dates[dateIndex]}</h1>`
+                    if(element.includes("Concluding Comments") && dateIndex < dates.length - 1)
+                    {
+                        dateIndex++
+                        document.querySelector(".talk_list").innerHTML += `
+                        <h1 class="month">${dates[dateIndex]}</h1>`
+                    }
                 }
-
-            }
-
             });
 
             document.querySelector(".talk_list").innerHTML += '</div>'
@@ -329,7 +332,6 @@
             const resultElement = document.getElementById('result')
 
             const rgb2hex = (rgb) => `#${rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/).slice(1).map(n => parseInt(n, 10).toString(16).padStart(2, '0')).join('')}`
-            
 
             if(resultElement.style.backgroundColor != '')
                 color = rgb2hex(resultElement.style.backgroundColor)
@@ -351,15 +353,18 @@
         }
 
         window.onbeforeunload = close_event_function;
-        function close_event_function() {
+        function close_event_function() 
+        {
             takeInput()
             eel.end_program()
             window.close()
         }        
 
         removeInput = document.getElementById('speaker_remove')
-        removeInput.addEventListener("keypress", function(event) {
-            if(event.key === "Enter") {
+        removeInput.addEventListener("keypress", function(event) 
+        {
+            if(event.key === "Enter") 
+            {
                 event.preventDefault();
                 document.getElementById("remove_name").click()
             }
@@ -367,11 +372,13 @@
 
         
         addInput = document.getElementById('speaker_add')
-        addInput.addEventListener("keypress", function(event) {
-                if(event.key === "Enter") {
-                        event.preventDefault();
-                        document.getElementById("add_name").click()
-                    }
+        addInput.addEventListener("keypress", function(event) 
+        {
+                if(event.key === "Enter") 
+                {
+                    event.preventDefault();
+                    document.getElementById("add_name").click()
+                }
         })
 
         function add_speaker()
@@ -411,6 +418,12 @@
                 else 
                     removeInput.value = ''
             }
+        }
+
+        function quit()
+        {
+            eel.quit()
+            window.close()
         }
 </script>
 
