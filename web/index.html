@@ -129,7 +129,11 @@
             <button id="start-button">Open the eyedropper</button>
             <span id="result"></span>
             <input id="speaker_add" type="text" style="width:150px">
-            <button placedholder="Add name" onclick="add_speaker()">Add speaker</button>
+            <button id="add_name" placedholder="Add name" onclick="add_speaker()">Add speaker</button>
+
+            <input id="speaker_remove" type="text" style="width:150px">
+            <button id="remove_name" placedholder="Remove name" onclick="remove_speaker()">Remove speaker</button>
+
         </div>
         <div class="content">
             <ul class="talk_list">
@@ -178,31 +182,7 @@
                 }
             }
         });
-        /*execute a function presses a key on the keyboard:*/
-        inp.addEventListener("keydown", function(e) {
-            var x = document.getElementById(this.id + "autocomplete-list");
-            if (x) x = x.getElementsByTagName("div");
-            if (e.keyCode == 40) {
-                /*If the arrow DOWN key is pressed,
-                increase the currentFocus variable:*/
-                currentFocus++;
-                /*and and make the current item more visible:*/
-                addActive(x);
-            } else if (e.keyCode == 38) { //up
-                /*If the arrow UP key is pressed,
-                decrease the currentFocus variable:*/
-                currentFocus--;
-                /*and and make the current item more visible:*/
-                addActive(x);
-            } else if (e.keyCode == 13) {
-                /*If the ENTER key is pressed, prevent the form from being submitted,*/
-                e.preventDefault();
-                if (currentFocus > -1) {
-                /*and simulate a click on the "active" item:*/
-                if (x) x[currentFocus].click();
-                }
-            }
-        });
+
         function addActive(x) {
             /*a function to classify an item as "active":*/
             if (!x) return false;
@@ -393,19 +373,59 @@
             window.close()
         }        
 
+        removeInput = document.getElementById('speaker_remove')
+        removeInput.addEventListener("keypress", function(event) {
+            if(event.key === "Enter") {
+                event.preventDefault();
+                document.getElementById("remove_name").click()
+            }
+        })
+
+        
+        addInput = document.getElementById('speaker_add')
+        addInput.addEventListener("keypress", function(event) {
+                if(event.key === "Enter") {
+                        event.preventDefault();
+                        document.getElementById("add_name").click()
+                    }
+        })
+
         function add_speaker()
         {   
-            input = document.getElementById('speaker_add')
-
-            if(input.value != '' )
+            addInput = document.getElementById('speaker_add')
+            if(addInput.value != '' )
             {
-                if(!namesArray.includes(input.value))
+                if(!namesArray.includes(addInput.value))
                 {
-                    eel.add_speaker(input.value)
-                    input.value = ''
+                    eel.add_speaker(addInput.value)
+                    namesArray.push(addInput.value)
+                    console.log(namesArray)
+                    addInput.value = ''
                 }
                 else 
-                    input.value = ''
+                    addInput.value = ''
+            }
+        }
+
+  
+        function remove_speaker()
+        {   
+            removeInput = document.getElementById('speaker_remove')
+            if(removeInput.value != '' )
+            {
+                if(namesArray.includes(removeInput.value))
+                {
+                    eel.remove_speaker(removeInput.value)
+
+                    namesArray.splice(namesArray.indexOf(removeInput.value), 1)
+
+                    removeInput.value = ''
+
+                    console.log(namesArray)
+
+                }
+                else 
+                    removeInput.value = ''
             }
         }
 

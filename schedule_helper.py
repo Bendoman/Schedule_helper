@@ -217,11 +217,11 @@ csv_file = open('src/names.csv', 'r')
 csv_reader = csv.reader(csv_file)
 for row in csv_reader:
     names.append(row[0])
-names = names[1:]
+
 print(names)
 
 csv_file.close()
-csv_file = open('src/names.csv', 'a', newline='\n')
+csv_file = open('src/names.csv', 'w', newline='\n')
 writer = csv.writer(csv_file, delimiter='\n')
 
 
@@ -258,8 +258,14 @@ def open_directory():
 
 @eel.expose
 def add_speaker(value):
-    print(value)
-    writer.writerow([value])
+    names.append(value)
+
+namesToRemove = []
+@eel.expose
+def remove_speaker(value):
+    namesToRemove.append(value)
+
+
 
 
 eel.start("index.html", size=(1100, 800), block=False)
@@ -275,7 +281,19 @@ while True:
 
 print("out of loops")
 print(headingColor)
+
+print(names)
+print(namesToRemove)
+
+
+for nameToRemove in namesToRemove:
+    names.remove(nameToRemove)
+
+for name in names:
+    writer.writerow([name])
+
 csv_file.close()
+
 
 # # Captures the value of the Entry widgets when this function is called
 # def captureInput(event, talk):
