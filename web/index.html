@@ -128,8 +128,8 @@
             <button onclick="open_directory()">Open epubs folder</button>
             <button id="start-button">Open the eyedropper</button>
             <span id="result"></span>
-            <input id="speaker_input" type="text" style="width:150px">
-            <button onclick="add_speaker()">Add speaker</button>
+            <input id="speaker_add" type="text" style="width:150px">
+            <button placedholder="Add name" onclick="add_speaker()">Add speaker</button>
         </div>
         <div class="content">
             <ul class="talk_list">
@@ -395,15 +395,19 @@
 
         function add_speaker()
         {   
-            input = document.getElementById('speaker_input')
+            input = document.getElementById('speaker_add')
 
-            if(input.value != '')
-                eel.add_speaker(input.value)
+            if(input.value != '' )
+            {
+                if(!namesArray.includes(input.value))
+                {
+                    eel.add_speaker(input.value)
+                    input.value = ''
+                }
+                else 
+                    input.value = ''
+            }
         }
-
-
-
-
 
 
 // for(let i = 0; i < inputs.length; i++)

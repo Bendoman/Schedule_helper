@@ -212,12 +212,20 @@ eel.init(f'{os.path.dirname(os.path.realpath(__file__))}/web')
 
 
 names = []
-with open('src/names.csv') as csv_file:
-    csv_reader = csv.reader(csv_file, delimiter=',')
-    for row in csv_reader:
-        names.append(row[0])
+import csv
+csv_file = open('src/names.csv', 'r')
+csv_reader = csv.reader(csv_file)
+for row in csv_reader:
+    names.append(row[0])
 names = names[1:]
 print(names)
+
+csv_file.close()
+csv_file = open('src/names.csv', 'a', newline='\n')
+writer = csv.writer(csv_file, delimiter='\n')
+
+
+
 
 eel.setup(talks, dates, names)
 
@@ -251,14 +259,7 @@ def open_directory():
 @eel.expose
 def add_speaker(value):
     print(value)
-    file = os.open("src/names.csv", os.O_APPEND)
-    writer = csv.writer(file)
-    writer.writerow([[value],[]]) 
-    # ???????????????
-
-        # with open('src/names.csv', 'w') as csv_file:
-    #     writer = csv.writer(csv_file)
-    #     writer.writerow([f'{value}'])
+    writer.writerow([value])
 
 
 eel.start("index.html", size=(1100, 800), block=False)
@@ -274,7 +275,7 @@ while True:
 
 print("out of loops")
 print(headingColor)
-
+csv_file.close()
 
 # # Captures the value of the Entry widgets when this function is called
 # def captureInput(event, talk):
