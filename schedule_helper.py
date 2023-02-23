@@ -17,7 +17,6 @@ from openpyxl.styles import Border, Side
 
 import ebooklib
 from ebooklib import epub
-
 # ===============
 
 # Finds all files with the .epub extension in the /epubs directory
@@ -33,7 +32,9 @@ if(len(epubs) != 1): # Raises an error if more than one .epub file is present
 
 bookPath = epubs[0]
 book = epub.read_epub(f'epubs/{bookPath}')
-# shutil.move(f'epubs/{bookPath}', f'epubs archive/{bookPath}')
+
+#Moves the selected epub file into the epubs archive directory
+shutil.move(f'epubs/{bookPath}', f'epubs archive/{bookPath}')
 
 
 # Fills the bookText list with the raw item content from the .epub
@@ -166,91 +167,38 @@ christians.pop()
 
 
 # ====USER-INTERFACE====
-# root = Tk()
-# root.geometry('800x500')
-# root.title('Speaker assignment')
-
-# # Create a main frame
-# main_frame = Frame(root)
-# main_frame.pack(fill=BOTH, expand=1)
-
-# # Create a canvas, so that the entire window can be scrolled
-# my_canvas = Canvas(main_frame)
-# my_canvas.pack(side=LEFT, fill=BOTH, expand=1)
-
-# # Add a scrollbar to the Canvas
-# my_scrollbar = ttk.Scrollbar(main_frame, orient=VERTICAL, command=my_canvas.yview)
-# my_scrollbar.pack(side=RIGHT, fill=Y)
-
-# # configure the canvas
-# my_canvas.configure(yscrollcommand=my_scrollbar.set)
-# my_canvas.bind('<Configure>', lambda e: my_canvas.configure(scrollregion=my_canvas.bbox('all')))
-
-# # create another frame inside the canvas
-# second_frame = Frame(my_canvas)
-# my_canvas.create_window((0,0), window=second_frame, anchor="nw")
-
-
-# dateIndex = 0
+headingColor = '' # aRGB hex color code used for the workbook headers
 talkSpeakerDict = {} # Dictionary that associates a speaker value with a talk key
-headingColor = ''
 
 eel.init(f'{os.path.dirname(os.path.realpath(__file__))}/web')
 
-# displayTalks = []
-
-# for i in range(len(talks)):
-#     if "Song" not in talks[i]:
-#         # Truncates string if it contains 85 characters or greater
-#         try:
-#             result = re.search(".{85}", talks[i]).group()
-#             result += "..." 
-#         except:
-#             result = talks[i]
-
-#         displayTalks.append(result)
-
-
-names = []
-import csv
+# Reads the names.csv file and adds each row the the names list
+names = [] 
 csv_file = open('src/names.csv', 'r')
 csv_reader = csv.reader(csv_file)
 for row in csv_reader:
     names.append(row[0])
-
-print(names)
-
 csv_file.close()
+
+# Re-opens the csv file so that it can be written to later on
 csv_file = open('src/names.csv', 'w', newline='\n')
 writer = csv.writer(csv_file, delimiter='\n')
 
 
-
-
 eel.setup(talks, dates, names)
-
 
 open = True
 @eel.expose
 def end_program():
     global open
     open = False
-    print("test")
 
 @eel.expose
 def take_input(values, color=''):
     global headingColor
-    print(values)
     for value in values:
         talkSpeakerDict[value[1]] = value[0]
     headingColor = color[1:]
-
-    print(headingColor.upper())
-    # headingColor = headingColor[1:].upper()
-    # headingColor = re.sub('\D', '', headingColor)
-    
-
-    # print(rgb_to_hex_conversion(headingColor[0:1], headingColor[2:3], headingColor[4:5]))
 
 @eel.expose
 def open_directory():
@@ -266,24 +214,11 @@ def remove_speaker(value):
     namesToRemove.append(value)
 
 
-
-
 eel.start("index.html", size=(1100, 800), block=False)
-
-while True:
-    
+while True:    
     eel.sleep(1.0)
-
     if(open == False):
         break
-    #do things
-
-
-print("out of loops")
-print(headingColor)
-
-print(names)
-print(namesToRemove)
 
 
 for nameToRemove in namesToRemove:
@@ -293,46 +228,6 @@ for name in names:
     writer.writerow([name])
 
 csv_file.close()
-
-
-# # Captures the value of the Entry widgets when this function is called
-# def captureInput(event, talk):
-#     value = event.widget.get()
-#     talkSpeakerDict[talk] = value
-
-
-# for i in range(len(talks)):
-#     # Intermediary handler for each Entry widget created so that unique values can be passed
-#     def handler(event, talkIndex=i):
-#             captureInput(event, talks[talkIndex])
-
-
-#     if "Song" not in talks[i]:
-#         # Truncates string if it contains 85 characters or greater
-#         try:
-#             result = re.search(".{85}", talks[i]).group()
-#             result += "..." 
-#         except:
-#             result = talks[i]
-
-#         # Creates a label and associated Entry field for the user to input 
-#         # a speaker to be assigned to a specific talk
-#         if("Opening Comments" not in result):
-#             Label(second_frame, text=result, anchor="e", width=75).grid(row=i, column=0, pady=10, padx=0)
-
-#             entry = (Entry(second_frame))
-#             entry.grid(row=i, column=1, pady=10, padx=10)
-#             entry.bind('<KeyRelease>', handler)
-#         else: # Creates a label holding the date range of the sheet in place of the sheet
-#             Label(second_frame, text=dates[dateIndex], anchor="e", width=75).grid(row=i, column=0, pady=10, padx=0)
-#             dateIndex += 1
-dateIndex = 0
-
-# def close():
-#     root.quit()
-# Button(second_frame, text='Apply', command=close).grid(row=1, column=3)
-
-# root.mainloop()
 
 
 # ====SPREADSHEET-EDITING====
@@ -350,7 +245,6 @@ for row in range(1, rows + 1):
         if(songCounter < len(songs) - 1):
             songCounter += 1
         
-
 mIndex = 0
 tIndex = 0
 cIndex = 0
@@ -380,7 +274,6 @@ def insertTalk(row):
 
 row = 1
 while row < rows:
-# for row in range(1, 1000):
     if(ws1[f'C{row}'].value == '[Talk]'):
         if(current == 'treasures'):
             ws1[f'C{row}'] = ""
@@ -430,8 +323,8 @@ border = Border(top = top, bottom = bottom, left = left, right = right)
 
 finishTime = timedelta(0, (7*3600+6*60))
 
-
 row = 1
+dateIndex = 0
 while row < rows:
     if(dateIndex >= len(dates)):  
         break
@@ -449,7 +342,6 @@ while row < rows:
     if(value != None and "Closing Prayer" in value): 
         ws1.delete_rows(row - 1, 1)
         rows -= 1
-
 
     value = ws1[f'A{row}'].value
 
@@ -507,11 +399,9 @@ while row < rows:
 
 
 
-
 first = re.sub("-.*\s", " ", book.get_metadata('DC', 'title')[0][0])
 second = re.sub(",\s.*-", ", ", book.get_metadata('DC', 'title')[0][0])
 ws1['B1'] = first
-
 
 secondCoord = None
 scripturesIndex = 0
@@ -552,7 +442,6 @@ for i in range(2):
 cellRange = ws1[f'A{secondCoord - 3}' : f'D{secondCoord - 3}']
 
 
-
 for i in range(2):
     for cell in cellRange:
         for x in cell:
@@ -569,13 +458,12 @@ for i in range(2):
 
 wb.save(filename = f"output/{book.title}.xlsx")
 
+os.chdir('./output')
 
-# os.chdir('./output')
-
-# if(platform.system() == "Windows"):
-#     os.startfile(f'{book.title}.xlsx')
-# else:
-#     opener ="open" if sys.platform == "darwin" else "xdg-open"
-#     subprocess.call([opener, f'{book.title}.xlsx'])
+if(platform.system() == "Windows"):
+    os.startfile(f'{book.title}.xlsx')
+else:
+    opener ="open" if sys.platform == "darwin" else "xdg-open"
+    subprocess.call([opener, f'{book.title}.xlsx'])
 
 
