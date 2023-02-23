@@ -10,12 +10,6 @@ import platform
 import openpyxl 
 import subprocess 
 
-#
-
-from tkinter import *
-from tkinter import ttk
-
-from pprint import pprint
 from bs4 import BeautifulSoup
 
 from datetime import timedelta
@@ -24,7 +18,6 @@ from openpyxl.styles import Border, Side
 import ebooklib
 from ebooklib import epub
 
-import webbrowser
 # ===============
 
 # Finds all files with the .epub extension in the /epubs directory
@@ -254,6 +247,18 @@ def take_input(values, color=''):
 @eel.expose
 def open_directory():
     subprocess.Popen(f'explorer "{os.path.abspath("./epubs")}"')
+
+@eel.expose
+def add_speaker(value):
+    print(value)
+    file = os.open("src/names.csv", os.O_APPEND)
+    writer = csv.writer(file)
+    writer.writerow([[value],[]]) 
+    # ???????????????
+
+        # with open('src/names.csv', 'w') as csv_file:
+    #     writer = csv.writer(csv_file)
+    #     writer.writerow([f'{value}'])
 
 
 eel.start("index.html", size=(1100, 800), block=False)

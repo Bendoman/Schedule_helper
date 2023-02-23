@@ -128,6 +128,8 @@
             <button onclick="open_directory()">Open epubs folder</button>
             <button id="start-button">Open the eyedropper</button>
             <span id="result"></span>
+            <input id="speaker_input" type="text" style="width:150px">
+            <button onclick="add_speaker()">Add speaker</button>
         </div>
         <div class="content">
             <ul class="talk_list">
@@ -136,7 +138,7 @@
     </body>
 
     <script defer>
-            function autocomplete(inp, arr) {
+        function autocomplete(inp, arr) {
         /*the autocomplete function takes two arguments,
         the text field element and an array of possible autocompleted values:*/
         var currentFocus;
@@ -341,7 +343,7 @@
             document.querySelector(".talk_list").innerHTML += '</div>'
 
             const inputs = document.getElementsByTagName("input")
-            for(let i = 0; i < inputs.length; i++)
+            for(let i = 1; i < inputs.length; i++)
             {   
                 autocomplete(inputs[i], namesArray); 
             }
@@ -391,6 +393,13 @@
             window.close()
         }        
 
+        function add_speaker()
+        {   
+            input = document.getElementById('speaker_input')
+
+            if(input.value != '')
+                eel.add_speaker(input.value)
+        }
 
 
 
