@@ -210,10 +210,14 @@ def remove_speaker(value):
 @eel.expose
 def quit():
     for nameToRemove in namesToRemove:
-    names.remove(nameToRemove)
+        names.remove(nameToRemove)
 
     for name in names:
         writer.writerow([name])
+
+    csv_file.close()
+
+    print(names)
     sys.exit()
 
 open = True
