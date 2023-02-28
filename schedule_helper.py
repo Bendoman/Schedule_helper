@@ -209,6 +209,11 @@ def remove_speaker(value):
 
 @eel.expose
 def quit():
+    for nameToRemove in namesToRemove:
+    names.remove(nameToRemove)
+
+    for name in names:
+        writer.writerow([name])
     sys.exit()
 
 open = True
