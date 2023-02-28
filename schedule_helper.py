@@ -217,7 +217,6 @@ def quit():
 
     csv_file.close()
 
-    print(names)
     sys.exit()
 
 open = True
